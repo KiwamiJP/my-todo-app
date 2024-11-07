@@ -17,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
           logoutUri={process.env.NODE_ENV === "production" ?
               "https://my-todo-app-flax.vercel.app"
               :"http://localhost:5173"}
+          isDangerouslyUseLocalStorage={true}
       >
           <TodosContextProvider>
               <App />
