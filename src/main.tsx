@@ -11,8 +11,12 @@ createRoot(document.getElementById('root')!).render(
       <KindeProvider
           clientId="20fd9f6b251c4ec49c2a6afd2d88f730"
           domain="https://kiwamijp.kinde.com"
-          redirectUri="http://localhost:5173"
-          logoutUri="http://localhost:5173"
+          redirectUri={process.env.Node === "production" ?
+              "https://my-todo-app-flax.vercel.app"
+              :"http://localhost:5173"}
+          logoutUri={process.env.Node === "production" ?
+              "https://my-todo-app-flax.vercel.app"
+              :"http://localhost:5173"}
       >
           <TodosContextProvider>
               <App />
