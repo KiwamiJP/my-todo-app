@@ -11,10 +11,10 @@ createRoot(document.getElementById('root')!).render(
       <KindeProvider
           clientId="20fd9f6b251c4ec49c2a6afd2d88f730"
           domain="https://kiwamijp.kinde.com"
-          redirectUri={process.env.Node === "production" ?
+          redirectUri={process.env.NODE_ENV === "production" ?
               "https://my-todo-app-flax.vercel.app"
               :"http://localhost:5173"}
-          logoutUri={process.env.Node === "production" ?
+          logoutUri={process.env.NODE_ENV === "production" ?
               "https://my-todo-app-flax.vercel.app"
               :"http://localhost:5173"}
       >
