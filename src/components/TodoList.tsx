@@ -1,6 +1,6 @@
-import DeleteBtn from "./DeleteBtn.tsx";
-import useTodosContext from "../lib/hooks.ts";
-import { Todo } from "../lib/type.ts";
+import DeleteBtn from "./DeleteBtn";
+import useTodosContext from "../lib/hooks";
+import { Todo } from "../lib/type";
 
 export default function TodoList() {
   const { todos, handleDeleteTodos, handleToogleTodos } = useTodosContext();

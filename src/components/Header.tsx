@@ -1,5 +1,5 @@
-import Logo from "./Logo.tsx";
-import Counter from "./Counter.tsx";
+import Logo from "./Logo";
+import Counter from "./Counter";
 
 export default function Header() {
     return (

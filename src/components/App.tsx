@@ -1,8 +1,8 @@
-import BackgroundHeading from "./BackgroundHeading.tsx";
-import Footer from "./Footer.tsx";
-import Header from "./Header.tsx";
-import SideBar from "./SideBar.tsx";
-import TodoList from "./TodoList.tsx";
+import BackgroundHeading from "./BackgroundHeading";
+import Footer from "./Footer";
+import Header from "./Header";
+import SideBar from "./SideBar";
+import TodoList from "./TodoList";
 
 
 function App() {

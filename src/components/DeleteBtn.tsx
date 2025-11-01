@@ -1,4 +1,4 @@
-import {DeleteBtnProps} from "../lib/type.ts";
+import {DeleteBtnProps} from "../lib/type";
 
 export default function DeleteBtn({id,handleDeleteTodos}:DeleteBtnProps) {
     return (

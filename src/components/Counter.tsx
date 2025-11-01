@@ -1,4 +1,4 @@
-import useTodosContext from "../lib/hooks.ts";
+import useTodosContext from "../lib/hooks";
 
 export default function Counter() {
     const {numberOfCompletedTodos,totalNumberOfTodos} = useTodosContext();

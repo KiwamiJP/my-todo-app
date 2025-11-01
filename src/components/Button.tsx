@@ -1,4 +1,4 @@
-import {ButtonProps} from "../lib/type.ts";
+import {ButtonProps} from "../lib/type";
 
 
 export default function Button({onClick,type,children}:ButtonProps){

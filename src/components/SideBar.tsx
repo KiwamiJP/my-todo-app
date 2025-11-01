@@ -1,5 +1,5 @@
-import AddToDoForm from "./AddToDoForm.tsx";
-import Button from "./Button.tsx";
+import AddToDoForm from "./AddToDoForm";
+import Button from "./Button";
 import {useKindeAuth} from "@kinde-oss/kinde-auth-react";
 export default function SideBar() {
     const { login, register,isAuthenticated,user,logout } = useKindeAuth();
