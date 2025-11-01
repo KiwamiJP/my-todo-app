@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { TodosContext } from "../context/TodosContextProvider.tsx";
+import { TodosContext } from "../context/TodosContext.ts";
 import type { TodoContextType } from "./type.ts";
 
 export default function useTodosContext(): TodoContextType {

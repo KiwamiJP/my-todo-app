@@ -1,8 +1,7 @@
-import { createContext, useEffect, useState, ReactNode } from "react";
-import { Todo, TodoContextType } from "../lib/type.ts";
+import { useEffect, useState, ReactNode } from "react";
+import { TodosContext } from "./TodosContext.ts";
+import type { Todo, TodoContextType } from "../lib/type.ts";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
-
-export const TodosContext = createContext<TodoContextType | null>(null);
 
 type TodosContextProviderProps = {
   children: ReactNode;
@@ -63,7 +62,6 @@ export default function TodosContextProvider({
     );
   };
 
-  // Add todos to localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
