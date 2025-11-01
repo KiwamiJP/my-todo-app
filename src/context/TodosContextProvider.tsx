@@ -1,76 +1,83 @@
-import {createContext, useEffect, useState} from "react";
-import {Todo} from "../lib/type.ts";
-import {useKindeAuth} from "@kinde-oss/kinde-auth-react";
-type TTodosContext = {
-    todos: Todo[],
-    totalNumberOfTodos: number,
-    numberOfCompletedTodos: number,
-    handleAddTodos: (TodoText: string) => void,
-    handleDeleteTodos: (id: number) => void,
-    handleToogleTodos: (id: number) => void
-}
-export const TodosContext = createContext<TTodosContext | null>(null);
+import { createContext, useEffect, useState, ReactNode } from "react";
+import { Todo, TodoContextType } from "../lib/type.ts";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+
+export const TodosContext = createContext<TodoContextType | null>(null);
+
 type TodosContextProviderProps = {
-    children:React.ReactNode;
-}
-export default function TodosContextProvider({children}: TodosContextProviderProps) {
-const initialTodos = () =>{
+  children: ReactNode;
+};
+
+export default function TodosContextProvider({
+  children,
+}: TodosContextProviderProps) {
+  const initialTodos = (): Todo[] => {
     const savedTodos = localStorage.getItem("todos");
-    if(savedTodos){
-        return   JSON.parse(savedTodos);
-    }else{
-        return    [];
+    if (savedTodos) {
+      return JSON.parse(savedTodos) as Todo[];
+    } else {
+      return [];
     }
-}
-    const [todos,setTodos] = useState<Todo []>(initialTodos);
-    const {isAuthenticated} = useKindeAuth();
+  };
 
-    const totalNumberOfTodos = todos.length;
-    const numberOfCompletedTodos = todos.filter((todo: { isCompleted: boolean; }) =>todo.isCompleted ).length
+  const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  const { isAuthenticated } = useKindeAuth();
 
+  const totalNumberOfTodos = todos.length;
+  const numberOfCompletedTodos = todos.filter(
+    (todo: Todo) => todo.isCompleted
+  ).length;
 
-    const handleAddTodos = (todoText:string) => {
-        if(todos.length >= 3 && !isAuthenticated){
-            alert("Login to add more todos!")
-        }else{
-            setTodos((prev:any) => [
-                ...prev,
-                {
-                    id: prev.length+1,
-                    text:todoText,
-                    isCompleted: false,
-                }
-            ]);
+  const handleAddTodos = (todoText: string): void => {
+    if (todos.length >= 3 && !isAuthenticated) {
+      alert("Login to add more todos!");
+    } else {
+      setTodos((prev: Todo[]) => [
+        ...prev,
+        {
+          id: (prev.length + 1).toString(),
+          text: todoText,
+          isCompleted: false,
+        },
+      ]);
+    }
+  };
+
+  const handleToogleTodos = (id: string): void => {
+    setTodos(
+      todos.map((todo: Todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            isCompleted: !todo.isCompleted,
+          };
         }
-    }
-    const handleToogleTodos = (id:number)=>{
-        setTodos(todos.map((todo) => {
-            if(todo.id === id){
-                return {
-                    ...todo,
-                    isCompleted: !todo.isCompleted
-                }
-            }
-            return todo;
-        }))
-    }
-    const handleDeleteTodos = (id:number) => {
-        setTodos((prev)=>prev.filter((todo) => todo.id !== id))
-    }
-    //add todos to localstorage
-    useEffect(() => {
-            localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos]);
-    return(
-        <TodosContext.Provider
-            value={{
-                todos,
-            totalNumberOfTodos,
-            handleAddTodos,
-            handleToogleTodos,
-            handleDeleteTodos,
-            numberOfCompletedTodos,
-        }}>{children}
-        </TodosContext.Provider>
-    )
+        return todo;
+      })
+    );
+  };
+
+  const handleDeleteTodos = (id: string): void => {
+    setTodos((prev: Todo[]) =>
+      prev.filter((todo: Todo) => todo.id !== id)
+    );
+  };
+
+  // Add todos to localStorage
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const value: TodoContextType = {
+    todos,
+    totalNumberOfTodos,
+    numberOfCompletedTodos,
+    handleAddTodos,
+    handleDeleteTodos,
+    handleToogleTodos,
+  };
+
+  return (
+    <TodosContext.Provider value={value}>{children}</TodosContext.Provider>
+  );
 }
