@@ -1,6 +1,6 @@
 import { useEffect, useState, ReactNode } from "react";
-import { TodosContext } from "./TodosContext.ts";
-import type { Todo, TodoContextType } from "../lib/type.ts";
+import { TodosContext } from "./TodosContext";
+import type { Todo, TodoContextType } from "../lib/type";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 type TodosContextProviderProps = {

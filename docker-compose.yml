@@ -1,11 +1,62 @@
 version: '3.8'
 
+networks:
+  todo-network:
+    driver: bridge
+
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    container_name: todo-app
     ports:
-      - "8080:80"
-    container_name: my-todo-app
-    restart: unless-stopped
+      - "3000:3000"
+    networks:
+      - todo-network
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=todouser
+      - DB_PASSWORD=todopass
+      - DB_NAME=todos
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: todo-postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - todo-network
+    environment:
+      - POSTGRES_USER=todouser
+      - POSTGRES_PASSWORD=todopass
+      - POSTGRES_DB=todos
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todouser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    container_name: todo-nginx
+    ports:
+      - "80:80"
+    networks:
+      - todo-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
