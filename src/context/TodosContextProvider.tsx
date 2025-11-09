@@ -2,6 +2,7 @@ import { useEffect, useState, ReactNode } from "react";
 import { TodosContext } from "./TodosContext";
 import type { Todo, TodoContextType } from "../lib/type";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
+import { todoApi } from "../services/api";
 
 type TodosContextProviderProps = {
   children: ReactNode;
@@ -10,16 +11,8 @@ type TodosContextProviderProps = {
 export default function TodosContextProvider({
   children,
 }: TodosContextProviderProps) {
-  const initialTodos = (): Todo[] => {
-    const savedTodos = localStorage.getItem("todos");
-    if (savedTodos) {
-      return JSON.parse(savedTodos) as Todo[];
-    } else {
-      return [];
-    }
-  };
-
-  const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useKindeAuth();
 
   const totalNumberOfTodos = todos.length;
@@ -27,44 +20,63 @@ export default function TodosContextProvider({
     (todo: Todo) => todo.isCompleted
   ).length;
 
-  const handleAddTodos = (todoText: string): void => {
+  // Fetch todos from database on mount
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const data = await todoApi.getTodos();
+        setTodos(data);
+      } catch (error) {
+        console.error("Failed to fetch todos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
+  const handleAddTodos = async (todoText: string): Promise<void> => {
     if (todos.length >= 3 && !isAuthenticated) {
       alert("Login to add more todos!");
-    } else {
-      setTodos((prev: Todo[]) => [
-        ...prev,
-        {
-          id: (prev.length + 1).toString(),
-          text: todoText,
-          isCompleted: false,
-        },
-      ]);
+      return;
+    }
+
+    try {
+      const newTodo = await todoApi.createTodo(todoText);
+      setTodos((prev) => [newTodo, ...prev]);
+    } catch (error) {
+      console.error("Failed to add todo:", error);
+      alert("Failed to add todo. Please try again.");
     }
   };
 
-  const handleToogleTodos = (id: string): void => {
-    setTodos(
-      todos.map((todo: Todo) => {
-        if (todo.id === id) {
-          return {
-            ...todo,
-            isCompleted: !todo.isCompleted,
-          };
-        }
-        return todo;
-      })
-    );
+  const handleToogleTodos = async (id: string): Promise<void> => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+
+    try {
+      const updatedTodo = await todoApi.updateTodo(id, {
+        isCompleted: !todo.isCompleted,
+      });
+      setTodos((prev) =>
+        prev.map((t) => (t.id === id ? updatedTodo : t))
+      );
+    } catch (error) {
+      console.error("Failed to toggle todo:", error);
+      alert("Failed to update todo. Please try again.");
+    }
   };
 
-  const handleDeleteTodos = (id: string): void => {
-    setTodos((prev: Todo[]) =>
-      prev.filter((todo: Todo) => todo.id !== id)
-    );
+  const handleDeleteTodos = async (id: string): Promise<void> => {
+    try {
+      await todoApi.deleteTodo(id);
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    } catch (error) {
+      console.error("Failed to delete todo:", error);
+      alert("Failed to delete todo. Please try again.");
+    }
   };
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
 
   const value: TodoContextType = {
     todos,
@@ -74,6 +86,14 @@ export default function TodosContextProvider({
     handleDeleteTodos,
     handleToogleTodos,
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl">Loading todos...</div>
+      </div>
+    );
+  }
 
   return (
     <TodosContext.Provider value={value}>{children}</TodosContext.Provider>

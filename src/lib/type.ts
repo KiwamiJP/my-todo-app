@@ -2,6 +2,8 @@ export type Todo = {
   id: string;
   text: string;
   isCompleted: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type TodoListProps = {
@@ -38,7 +40,7 @@ export type TodoContextType = {
   todos: Todo[];
   numberOfCompletedTodos: number;
   totalNumberOfTodos: number;
-  handleAddTodos: (text: string) => void;
-  handleDeleteTodos: (id: string) => void;
-  handleToogleTodos: (id: string) => void;
+  handleAddTodos: (text: string) => Promise<void>;
+  handleDeleteTodos: (id: string) => Promise<void>;
+  handleToogleTodos: (id: string) => Promise<void>;
 };

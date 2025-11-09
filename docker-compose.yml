@@ -41,7 +41,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U todouser"]
+      test: ["CMD-SHELL", "pg_isready -U todouser -d todos"]
       interval: 10s
       timeout: 5s
       retries: 5
